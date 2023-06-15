@@ -7,7 +7,8 @@
     display: none;
     position: fixed;
     justify-content: center;
-    padding: 5%;
+    align-content: center;
+    flex-wrap: wrap;
     margin: 0;
     left: 0;
     top: 0;
@@ -18,7 +19,8 @@
 #celebrate img {
     display: block;
     max-height: 90%;
-    max-width: 90%
+    max-width: 90%;
+    object-fit: contain;
 }
 
 #celebrate.visible {
