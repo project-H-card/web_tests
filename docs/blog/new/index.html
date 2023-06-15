@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブログ編集 | ハイスト</title>
+    <link rel="stylesheet" href="blog-edit.css">
+</head>
+
+<body>
+    <main>
+        <section id="blogRelated">
+            <section id="editHeader">
+                <div id="title">
+                    <input type="text" placeholder="記事タイトル" id="titleInput" name="titleInput">
+                </div>
+                <div id="tag">
+                    <input type="text" placeholder="タグを入力。スペース区切りで5個まで。「#」なし" id="tagInput" name="tagInput">
+                </div>
+                <div id="control">
+
+                </div>
+            </section>
+
+            <section id="editMain">
+                <div id="editMD">
+                    <textarea name="mdMain" id="mdMain" cols="30" rows="10"></textarea>
+                </div>
+                <div id="preview"></div>
+            </section>
+
+            <section id="editFooter">
+                <input type="button" value="保存">
+                <input type="button" value="公開設定">
+            </section>
+        </section>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="blog-edit.js"></script>
+</body>
+
+</html>
