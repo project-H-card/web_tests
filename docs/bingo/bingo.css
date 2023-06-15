@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+}
+
+
+#celebrate {
+    display: none;
+    position: fixed;
+    justify-content: center;
+    padding: 5%;
+    margin: 0;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0,0,0,0.1);
+}
+#celebrate img {
+    display: block;
+    max-height: 90%;
+    max-width: 90%
+}
+
+#celebrate.visible {
+    display: flex;
+    animation: expand 1s ease;
+}
+
+
+@keyframes expand {
+    0% {
+        opacity: 0;
+        scale: 0.1;
+    }
+    80% {
+        opacity: 1;
+        scale: 1.1;
+    }
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+
+
+#bingoRelated {
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+#bingo {
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+canvas {
+    margin: auto;
+    display: block;
+}
+
+#download {
+    margin: 20px auto;
+    display: block;
+}
+
+#twitterShare {
+    margin: 10px auto;
+    display: flex;
+    justify-content: center;
+}

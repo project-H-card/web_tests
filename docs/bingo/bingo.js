@@ -1,22 +1,25 @@
 
 
 class Cell {
-    constructor(x, y, text) {
+    constructor(x, y, text, alwaysChecked) {
         this.x = x;
         this.y = y;
         this.text = text;
 
+        this.alwaysChecked = alwaysChecked
         this.isChecked = false;
+        if(alwaysChecked) this.isChecked = true;
     }
 
     toggleCheck() {
+        if(this.alwaysChecked) return;
         this.isChecked = !this.isChecked;
     }
 }
 
 
 class Bingo {
-    constructor(rowNum, columnNum, canvasID, cellSize) {
+    constructor(rowNum, columnNum, canvasID, cellSize, celebrateDivID) {
         this.images = {};
         // 非同期だからロードを待った方がいいかも。
         this.loadImages();
@@ -24,11 +27,14 @@ class Bingo {
         this.canvas = document.querySelector(canvasID);
         this.ctx = this.canvas.getContext("2d");
 
+        this.celebrateDiv = document.querySelector(celebrateDivID);
+
         this.rowNum = rowNum;
         this.columnNum = columnNum;
         this.cellSize = cellSize;
 
         this.cells = [[]];
+        this.bingos = [];
 
         this.width = cellSize * columnNum;
         this.height = cellSize * rowNum;
@@ -44,10 +50,14 @@ class Bingo {
 
     loadImages() {
         this.images.circle = new Image();
-        this.images.circle.src = "../images/circle.webp";
+        this.images.circle.src = "../images/circle_yellow_bold.webp";
 
         this.images.bg = new Image();
         this.images.bg.src = "../images/bg.webp";
+
+        this.images.bingo = new Image();
+        this.images.bingo.src = "../images/bingo.png";
+
     }
 
 
@@ -69,12 +79,84 @@ class Bingo {
         for (let i = 0; i < this.rowNum; i++) {
             const row = [];
             for (let j = 0; j < this.columnNum; j++) {
-                row.push(new Cell(j, i, cellData[i][j]));
+                let alwaysChecked = false;
+                if(i == (this.rowNum-1)/2 && j == (this.columnNum-1)/2) {
+                    alwaysChecked = true;
+                }
+                row.push(new Cell(j, i, cellData[i][j], alwaysChecked));
             }
             cells.push(row);
         }
 
         return cells;
+    }
+
+
+
+    update(i, j) {
+        const hasNewBingo = this.checkBingo(i, j);
+        this.draw();
+
+        if(hasNewBingo) {
+            this.celebrateNewBingo();
+        }
+    }
+
+
+    checkBingo(i, j) {
+        let isBingo = false;
+
+        // 行ビンゴ判定
+        let isRowBingo = true;
+        for(let k = 0; k < this.columnNum; k++) {
+            if(!this.cells[i][k].isChecked) {
+                isRowBingo = false;
+                break;
+            }
+        }
+        if(isRowBingo) {
+            isBingo = true;
+            this.bingos.push(`i${i}`);
+        }
+
+
+        // 列ビンゴ判定
+        let isColumnBingo = true;
+        for(let k = 0; k < this.columnNum; k++) {
+            if(!this.cells[k][j].isChecked) {
+                isColumnBingo = false;
+                break;
+            }
+        }
+        if(isColumnBingo) {
+            isBingo = true;
+            this.bingos.push(`j${j}`);
+        }
+
+        // 斜めビンゴ判定
+
+        return isBingo;
+    }
+
+
+    ijToNum(i, j) {
+        return this.columnNum * i + j;
+    }
+
+    numToIJ(num) {
+        const i = Math.floor(num / this.columnNum);
+        const j = num % this.columnNum;
+
+        return {i, j}
+    }
+
+
+    celebrateNewBingo() {
+        this.celebrateDiv.classList.add("visible");
+
+        setTimeout(() => {
+            this.celebrateDiv.classList.remove("visible");
+        }, 1000);
     }
 
 
@@ -105,7 +187,7 @@ class Bingo {
         const {x, y} = this.posXYToCellXY(posX, posY);
 
         this.cells[y][x].toggleCheck();
-        this.draw();
+        this.update(y, x);
 
     }
 
@@ -173,7 +255,7 @@ const cellWidthMax = innerWidth / columnNum;
 const cellHeightMax = innerHeight / rowNum;
 const cellSize = cellWidthMax > cellHeightMax ? cellHeightMax * 0.8 : cellWidthMax * 0.8;
 
-const bingo = new Bingo(rowNum, columnNum, canvasID, cellSize);
+const bingo = new Bingo(rowNum, columnNum, canvasID, cellSize, "#celebrate");
 
 const cellData = [];
 for (let i = 0; i < rowNum; i++) {
