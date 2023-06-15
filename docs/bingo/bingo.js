@@ -12,8 +12,13 @@ class Cell {
     }
 
     toggleCheck() {
-        if(this.alwaysChecked) return;
+        if(this.alwaysChecked) return false;
         this.isChecked = !this.isChecked;
+        if(this.isChecked) {
+            return "add";
+        } else {
+            return "remove";
+        }
     }
 }
 
@@ -34,7 +39,7 @@ class Bingo {
         this.cellSize = cellSize;
 
         this.cells = [[]];
-        this.bingos = [];
+        this.bingos = []; // "i0" 〜 "i{rowNum-1}", "j0" 〜 "j{columnNum-1}", "lu"(left up), "ru"(right up)
 
         this.width = cellSize * columnNum;
         this.height = cellSize * rowNum;
@@ -93,8 +98,13 @@ class Bingo {
 
 
 
-    update(i, j) {
-        const hasNewBingo = this.checkBingo(i, j);
+    update(i, j, isCircleAddedOrRemoved) {
+        let hasNewBingo = false;
+        if(isCircleAddedOrRemoved == "add") {
+            hasNewBingo = this.checkNewBingo(i, j);
+        } else if(isCircleAddedOrRemoved == "remove") {
+            this.checkRemoveBingo(i, j);
+        }
         this.draw();
 
         if(hasNewBingo) {
@@ -103,7 +113,7 @@ class Bingo {
     }
 
 
-    checkBingo(i, j) {
+    checkNewBingo(i, j) {
         let isBingo = false;
 
         // 行ビンゴ判定
@@ -134,8 +144,47 @@ class Bingo {
         }
 
         // 斜めビンゴ判定
+        if(i == j) {
+            let isLUBingo = true;
+            for(let k = 0; k < this.rowNum; k++) {
+                if(!this.cells[k][k].isChecked) {
+                    isLUBingo = false;
+                    break
+                }
+            }
+            if(isLUBingo) {
+                isBingo = true;
+                this.bingos.push(`lu`);
+            }
+        }
+        if(i + j == this.rowNum - 1) {
+            let isRUBingo = true;
+            for(let k = 0; k < this.rowNum; k++) {
+                if(!this.cells[k][this.rowNum - 1 - k].isChecked) {
+                    isRUBingo = false;
+                    break
+                }
+            }
+            if(isRUBingo) {
+                isBingo = true;
+                this.bingos.push(`ru`);
+            }
+        }
 
         return isBingo;
+    }
+
+
+    checkRemoveBingo(i, j) {
+        this.bingos = this.bingos.filter(str => str != `i${i}` && str != `j${j}`);
+        if(i == j) {
+            this.bingos = this.bingos.filter(str => str != `lu`);
+        }
+        if(i + j == this.rowNum - 1) {
+            this.bingos = this.bingos.filter(str => str != `ru`);
+        }
+
+        console.log(this.bingos);
     }
 
 
@@ -186,8 +235,8 @@ class Bingo {
 
         const {x, y} = this.posXYToCellXY(posX, posY);
 
-        this.cells[y][x].toggleCheck();
-        this.update(y, x);
+        const isCircleAddedOrRemoved =this.cells[y][x].toggleCheck();
+        this.update(y, x, isCircleAddedOrRemoved);
 
     }
 
@@ -212,6 +261,8 @@ class Bingo {
                 this.drawCell(i, j);
             }
         }
+
+        this.drawLines();
 
 
     }
@@ -244,6 +295,54 @@ class Bingo {
     }
 
 
+    drawLines() {
+        if(this.bingos.length <= 0) return;
+
+        this.ctx.fillStyle = "rgba(200, 50, 50, 0.8)";
+        const lineWidth = 20;
+
+        for (let i = 0; i < this.rowNum; i++) {
+            if(this.bingos.find(elem => elem == `i${i}`)) {
+                this.ctx.fillRect(cellSize/4, cellSize*i + cellSize/2- lineWidth/2, (this.rowNum -1/2) * cellSize, lineWidth);
+            }
+        }
+
+        for (let j = 0; j < this.columnNum; j++) {
+            if(this.bingos.find(elem => elem == `j${j}`)) {
+                this.ctx.fillRect(cellSize*j + cellSize/2- lineWidth/2, cellSize/4, lineWidth, (this.columnNum -1/2) * cellSize);
+            }
+        }
+
+        if(this.bingos.find(elem => elem == `lu`)) {
+            this.ctx.beginPath();
+
+            const sqrt =  (lineWidth/2)/Math.SQRT2;
+
+            this.ctx.moveTo(this.cellSize/2 + sqrt, this.cellSize/2 - sqrt);
+            this.ctx.lineTo((this.rowNum-1/2) * this.cellSize + sqrt, (this.rowNum-1/2) * this.cellSize - sqrt);
+            this.ctx.lineTo((this.rowNum-1/2) * this.cellSize - sqrt, (this.rowNum-1/2) * this.cellSize + sqrt);
+            this.ctx.lineTo(this.cellSize/2 - sqrt, this.cellSize/2 + sqrt);
+
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+
+        if(this.bingos.find(elem => elem == `ru`)) {
+            this.ctx.beginPath();
+
+            const sqrt =  (lineWidth/2)/Math.SQRT2;
+
+            this.ctx.moveTo((this.rowNum-1/2) * this.cellSize + sqrt, this.cellSize/2 + sqrt);
+            this.ctx.lineTo(this.cellSize/2 + sqrt, (this.rowNum-1/2) * this.cellSize + sqrt);
+            this.ctx.lineTo(this.cellSize/2 - sqrt, (this.rowNum-1/2) * this.cellSize - sqrt);
+            this.ctx.lineTo((this.rowNum-1/2) * this.cellSize - sqrt, this.cellSize/2 - sqrt);
+
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+    }
+
+
 }
 
 const canvasID = "#bingoCanvas";
@@ -266,7 +365,7 @@ for (let i = 0; i < rowNum; i++) {
     cellData.push(row);
 }
 
-console.log(cellData);
+// console.log(cellData);
 
 bingo.init(cellData);
 
