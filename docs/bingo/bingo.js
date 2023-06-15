@@ -43,18 +43,24 @@ class Bingo {
 
 
     loadImages() {
-        // this.images.circle = new Image();
-        // this.images.circle.src = "";
+        this.images.circle = new Image();
+        this.images.circle.src = "../images/circle.webp";
+
+        this.images.bg = new Image();
+        this.images.bg.src = "../images/bg.webp";
     }
 
 
     init(cellData) {
         this.cells = this.initCells(cellData);
-        this.draw();
-        this.canvas.addEventListener("click", (e) => {
-            const { canvasX, canvasY } = this.mouseEventToCanvasXY(e);
-            this.handleClick(canvasX, canvasY);
-        })
+
+        this.images.bg.onload = () => {
+            this.draw();
+            this.canvas.addEventListener("click", (e) => {
+                const { canvasX, canvasY } = this.mouseEventToCanvasXY(e);
+                this.handleClick(canvasX, canvasY);
+            })
+        };
     }
 
 
@@ -113,14 +119,18 @@ class Bingo {
     draw() {
         this.ctx.fillStyle = "black";
         this.ctx.fillRect(0, 0, this.width, this.height);
+
         this.ctx.font = "20px serif";
         this.ctx.textAlign = 'center';
+
+        this.ctx.drawImage(this.images.bg, 0, 0, this.width, this.height);
 
         for (let i = 0; i < this.rowNum; i++) {
             for (let j = 0; j < this.columnNum; j++) {
                 this.drawCell(i, j);
             }
         }
+
 
     }
 
@@ -130,21 +140,23 @@ class Bingo {
         const cellCanvasLeft = j * this.cellSize;
         const cellCanvasTop = i * this.cellSize
 
-        this.ctx.strokeStyle = "black";
+        // this.ctx.strokeStyle = "black";
+        // this.ctx.fillStyle = "white";
+        // this.ctx.strokeRect(cellCanvasLeft, cellCanvasTop, this.cellSize, this.cellSize);
+        // this.ctx.fillRect(cellCanvasLeft, cellCanvasTop, this.cellSize, this.cellSize);
+
+
+        // this.ctx.fillStyle = "black";
         this.ctx.fillStyle = "white";
-        this.ctx.strokeRect(cellCanvasLeft, cellCanvasTop, this.cellSize, this.cellSize);
-        this.ctx.fillRect(cellCanvasLeft, cellCanvasTop, this.cellSize, this.cellSize);
-
-
-        this.ctx.fillStyle = "black";
         this.ctx.fillText(cell.text, cellCanvasLeft + Math.floor(this.cellSize / 2), Math.floor(cellCanvasTop + this.cellSize / 2));
-        // this.ctx.drawImage(this.images.flag, cellCanvasLeft, cellCanvasTop, this.cellSize, this.cellSize);
 
         if(cell.isChecked) {
-            this.ctx.strokeStyle = "red";
-            this.ctx.beginPath();
-            this.ctx.arc(cellCanvasLeft + Math.floor(this.cellSize / 2), Math.floor(cellCanvasTop + this.cellSize / 2), this.cellSize*0.4, 0, 2*Math.PI);
-            this.ctx.stroke();
+            // this.ctx.strokeStyle = "red";
+            // this.ctx.beginPath();
+            // this.ctx.arc(cellCanvasLeft + Math.floor(this.cellSize / 2), Math.floor(cellCanvasTop + this.cellSize / 2), this.cellSize*0.4, 0, 2*Math.PI);
+            // this.ctx.stroke();
+
+            this.ctx.drawImage(this.images.circle, cellCanvasLeft, cellCanvasTop, this.cellSize, this.cellSize);
         }
 
     }
@@ -152,11 +164,16 @@ class Bingo {
 
 }
 
+const canvasID = "#bingoCanvas";
+
 const rowNum = 5;
 const columnNum = 5;
-const cellSize = 50;
+const {innerHeight, innerWidth} = window;
+const cellWidthMax = innerWidth / columnNum;
+const cellHeightMax = innerHeight / rowNum;
+const cellSize = cellWidthMax > cellHeightMax ? cellHeightMax * 0.8 : cellWidthMax * 0.8;
 
-const bingo = new Bingo(rowNum, columnNum, "#bingoCanvas", cellSize);
+const bingo = new Bingo(rowNum, columnNum, canvasID, cellSize);
 
 const cellData = [];
 for (let i = 0; i < rowNum; i++) {
@@ -170,4 +187,14 @@ for (let i = 0; i < rowNum; i++) {
 console.log(cellData);
 
 bingo.init(cellData);
+
+
+document.getElementById("download").addEventListener("click", (e) => {
+    let canvas = document.querySelector(canvasID);
+
+    let link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = "ハイストビンゴ.png";
+    link.click();
+});
 
