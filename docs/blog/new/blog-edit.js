@@ -1,6 +1,3 @@
-const preview = document.getElementById('preview');
-const mdMain = document.getElementById('mdMain');
-
 
 const sampleText = `# 大見出し
 
@@ -65,6 +62,14 @@ const sampleText = `# 大見出し
 `;
 
 
+
+const preview = document.getElementById('preview');
+const mdMain = document.getElementById('mdMain');
+const editMD = document.getElementById('editMD');
+const separateRadio = document.getElementById('separate');
+const previewOnlyRadio = document.getElementById('previewOnly');
+const editOnlyRadio = document.getElementById('editOnly');
+
 mdMain.value = sampleText;
 
 
@@ -82,8 +87,27 @@ mdMain.addEventListener("change", (e) => {
 })
 
 mdMain.addEventListener("keyup", (e)=> {
-    // if(e.key == "Enter") {
-    //     update();
-    // }
     update();
 });
+
+separateRadio.addEventListener("change", (e) => {
+    preview.style.display = "block";
+    editMD.style.display = "block";
+    preview.style.width = "50%";
+    editMD.style.width = "50%";
+});
+
+previewOnlyRadio.addEventListener("change", (e) => {
+    preview.style.display = "block";
+    editMD.style.display = "none";
+    preview.style.width = "100%";
+    editMD.style.width = "50%";
+});
+
+editOnlyRadio.addEventListener("change", (e) => {
+    preview.style.display = "none";
+    editMD.style.display = "block";
+    preview.style.width = "50%";
+    editMD.style.width = "100%";
+});
+

@@ -15,6 +15,22 @@ input[type="text"] {
     margin: 5px;
 }
 
+input[type="radio"] {
+    display: none;
+}
+
+input[type="button"] {
+    background: white;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+input[type="button"]:hover {
+    background: #ddd;
+}
+
 
 #blogRelated {
     width: 100vw;
@@ -27,6 +43,7 @@ input[type="text"] {
     width: 100%;
 }
 
+
 #titleInput {
     font-size: 24px;
 }
@@ -35,12 +52,35 @@ input[type="text"] {
     font-size: 20px;
 }
 
+
+#control {
+    display: flex;
+    justify-content: end;
+}
+
+#modeControl {
+    padding: 5px;
+}
+
+input[type="radio"]+label {
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    background: white;
+}
+
+input[type="radio"]:checked+label {
+    background: #8da;
+}
+
+
+
 #editMain {
     margin: 5px;
     padding: 5px;
     display: flex;
     background: #fff;
-    height: calc(100% - 130px);
+    height: calc(100% - 170px);
 }
 
 #editMD {
@@ -112,5 +152,11 @@ input[type="text"] {
 #preview blockquote {
     border-left: 6px solid #eee;
     padding: 16px;
+}
+
+
+#editFooter {
+    display: flex;
+    justify-content: end;
 }
 

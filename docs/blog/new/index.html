@@ -19,7 +19,16 @@
                     <input type="text" placeholder="タグを入力。スペース区切りで5個まで。「#」なし" id="tagInput" name="tagInput">
                 </div>
                 <div id="control">
+                    <div id="modeControl">
+                        <input type="radio" name="mode" id="separate" checked>
+                        <label for="separate">並べて表示</label>
 
+                        <input type="radio" name="mode" id="previewOnly">
+                        <label for="previewOnly">プレビューのみ</label>
+
+                        <input type="radio" name="mode" id="editOnly">
+                        <label for="editOnly">編集のみ</label>
+                    </div>
                 </div>
             </section>
 
@@ -31,8 +40,10 @@
             </section>
 
             <section id="editFooter">
-                <input type="button" value="保存">
-                <input type="button" value="公開設定">
+                <div id="savePublish">
+                    <input type="button" value="保存">
+                    <input type="button" value="公開設定">
+                </div>
             </section>
         </section>
 
