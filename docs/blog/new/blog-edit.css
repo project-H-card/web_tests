@@ -154,6 +154,12 @@ input[type="radio"]:checked+label {
     padding: 16px;
 }
 
+#preview img {
+    width: 80%;
+    display: block;
+    margin: 20px auto;
+}
+
 
 #editFooter {
     display: flex;
